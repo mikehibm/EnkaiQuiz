@@ -115,19 +115,21 @@ var App = window.App || {};
 			
 			var drp = $("#drpQuizSet");
 			var btnNext = page.find(".button-next");
+			
+			drp.empty();
+			var len = App.data.quizSet.length, quiz;
+			for (var i=0; i<len; i++){
+				quiz = App.data.quizSet[i];
+				drp.append("<option value='" + i + "'>" + quiz.name + "</option>");
+			}
+			
 			drp.removeAttr("readonly");
 			btnNext.removeAttr("disabled");
 
 			btnNext.off();
 			btnNext.on('click', function(e){
 				if (e) e.preventDefault();
-				App.data.quizSetIndex = drp.val() -0;
-				
-//				App.socket.emit('select_quizset', { quizset: App.data.quizSetIndex });
-//				console.log('Sent message "select_quizset".', App.data.quizSetIndex);
-//				drp.attr("readonly", "readonly");
-//				btnNext.attr("disabled", "disabled");
-				
+				App.data.quizSetIndex = drp.val() -0;	//「-0」で数値化。
 				self.hide();
 				App.GameStartPage.show();
 			});
@@ -292,6 +294,11 @@ var App = window.App || {};
 			var self = this;
 			var page = $(this.element);
 			var btnNext = page.find(".button-next");
+			
+			console.log("QuizPage.show: ", App.data);
+			
+			var quiz = App.data.quizSet[App.data.quizSetIndex];
+			console.log("Quiz = ", quiz);
 			
 			btnNext.off();
 			btnNext.on('click', function(e){
