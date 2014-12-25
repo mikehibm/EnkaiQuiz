@@ -22,7 +22,7 @@
 	<body>
 		<div class="container-fluid">
 			<div class="title">
-				<h3>Quiz</h3>
+				<h3>Enkai Quiz</h3>
 			</div>
 			
 			<!--
@@ -53,7 +53,7 @@
 					    	<label for="txtGameName">大会の名称（例： ◯◯電機忘年会）</label>
 							<input type="text" maxlength="20" id="txtGameName" class="form-control" />
 					  	</div>
-						<button type="button" class="button-next btn btn-large btn-primary">次へ</button>
+						<button type="submit" class="button-next btn btn-large btn-primary">次へ</button>
 					</form>
 				</div>
 			</div>
@@ -77,7 +77,7 @@
 								<option value="3">ITクイズ</option>
 							</select>
 					  	</div>
-						<button type="button" class="button-next btn btn-large btn-primary">次へ</button>
+						<button type="submit" class="button-next btn btn-large btn-primary">次へ</button>
 					</form>
 				</div>
 			</div>
@@ -90,6 +90,19 @@
 			**************************************************
 			-->
 			<div id="passCodePage" class="page">
+				<div class="div-top">
+					<form>
+					  	<div class="form-group">
+					    	<label for="txtNickname">ニックネーム (例: まーくん)</label>
+							<input type="text" maxlength="6" id="txtNickname" class="form-control" />
+					  	</div>
+					  	<div class="form-group">
+					    	<label for="txtPass">パスコード</label>
+							<input type="number" max="999999" maxlength="6" id="txtPass" class="form-control" />
+					  	</div>
+						<button type="submit" class="button-next btn btn-large btn-primary">次へ</button>
+					</form>
+				</div>
 			</div>
 			
 			
@@ -101,6 +114,28 @@
 			**************************************************
 			-->
 			<div id="gameStartPage" class="page">
+				<div class="div-top">
+					<h3 id="lblGameName"></h3>
+					パスコード: <span id="lblPasscode"></span>
+					人数: <span id="lblCount"></span>
+				</div>
+				
+				<div class="div-players"></div>
+				
+				<div class="div-rules">
+					<h3>ルールの説明</h3>
+					<ul>
+						<li>最初の正解者は 3点 獲得</li>
+						<li>2番目の正解者は 2点 獲得</li>
+						<li>3番目の正解者は 1点 獲得</li>
+						<li>不正解は 1点 減点なので注意！</li>
+					</ul>
+				</div>
+				
+				<div class="div-bottom">
+					<p class="label-wait">参加者受付中です。<br />しばらくお待ち下さい...</p>
+					<button type="submit" class="button-start btn btn-large btn-primary">始める！</button>
+				</div>
 			</div>
 			
 			
@@ -110,6 +145,11 @@
 			**************************************************
 			-->
 			<div id="quizPage" class="page">
+				<h2>クイズ画面</h2>
+
+				<div class="div-bottom">
+					<button type="button" class="button-next btn btn-large btn-primary">次へ</button>
+				</div>
 			</div>
 			
 			
@@ -120,10 +160,16 @@
 			**************************************************
 			-->
 			<div id="rankingPage" class="page">
+				<h2>順位表</h2>
+				
+				<div class="div-bottom">
+					<button type="button" class="button-back btn btn-large btn-primary">戻る</button>
+				</div>
 			</div>
 			
 			
 		</div>		
+		
 		<script src="js/app.js"></script>
 	</body>
 </html>

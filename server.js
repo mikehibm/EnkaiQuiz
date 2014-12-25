@@ -1,6 +1,7 @@
 var http = require('http');
 var url = require('url');
 var fs = require('fs');
+var myapp = require("./game");
 
 var server = http.createServer(function (request, response) {
     var path = url.parse(request.url).pathname;
@@ -57,9 +58,61 @@ io.on('connection', function(socket){
     });
     
     socket.on('open_game', function(data){
-       var gameName = data.gamename;
-       console.log("open_game: gameName=" + gameName);
-       socket.emit('open_game_ok', { gamename: gameName, passcode: '112233' }); 
+        console.log("open_game: " + data);
+        
+        //Gameオブジェクトを生成。
+        var game = myapp.createGame(data.gameName);
+        
+        socket.emit('open_game_ok', { 
+           gameName: game.gameName, 
+           passCode: game.passCode,
+           nickname: '主催者さん', 
+           mode: 'master',
+           players: game.players 
+        }); 
+    });
+    
+    socket.on('send_pass', function(data){
+        console.log("send_pass: ", data);
+       
+        //data.passCodeから参加受付中のgameを探す。
+        var game = myapp.findGame(data.passCode);
+
+        //passCodeが一致するものが見つからなければエラーを返す。
+        if (!game){
+           socket.emit('send_pass_result', { error: 'パスコードが違います。', field: 'passCode', mode: data.mode }); 
+           return;
+        }
+       
+        //data.nicknameが既に同じ大会内で存在していたらエラーを返す。
+        if (game.findNickname(data.nickname)){
+           socket.emit('send_pass_result', { error: 'ニックネームが既に使われています。', field: 'nickname', mode: data.mode }); 
+           return;
+        }
+       
+        if (data.mode == 'play'){
+            //参加者リストに追加。
+            game.addPlayer(data.nickname);
+            
+            //参加した人以外の全員に通知。
+            socket.broadcast.emit('new_player', { 
+               gameName: game.gameName, 
+               passCode: game.passCode,
+               nickname: data.nickname, 
+               mode: data.mode,
+               players: game.players
+            });
+        }
+
+        //参加した人に返信。
+        socket.emit('send_pass_result', { 
+           gameName: game.gameName, 
+           passCode: game.passCode,
+           nickname: data.nickname, 
+           mode: data.mode,
+           players: game.players
+        }); 
+       
     });
     
 });

@@ -24,6 +24,7 @@ button {
 **************************************************/
 .title {
 	margin:0;
+	padding:0;
 	width: 100%;
 	height: 40px;
 	background-color: #22f;
@@ -32,6 +33,7 @@ button {
 
 .title h3 {
 	margin-top: 0px;
+	padding: 4px;
 	font-size: 2em;
 }
 
@@ -41,9 +43,22 @@ button {
 	display: none;
 }
 
+form input[type='text'], 
+form input[type='number'], 
+form select {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.div-top {
+	width: 100%;
+	margin-top: 32px;
+	text-align: center;
+}
+
 .div-center {
 	width: 100%;
-	margin-top: 160px;
+	margin-top: 120px;
 	text-align: center;
 }
 
@@ -53,15 +68,22 @@ button {
 	margin-bottom: 20px;
 }
 
-.div-center form input[type='text'], 
-.div-center form select {
-	margin-left: auto;
-	margin-right: auto;
+.div-bottom {
+	width: 100%;
+	height: 100px;
+	bottom: 8px;
+	text-align: center;
+}
+
+.div-bottom button {
+	margin-left: 10px;
+	margin-right: 10px;
 }
 
 
+
 /*************************************************
-* TOP Page
+* タイトル画面
 **************************************************/
 
 
@@ -85,13 +107,60 @@ button {
 /*************************************************
 * 参加者パスコード入力画面
 **************************************************/
+#passCodePage input[type='text'],
+#passCodePage input[type='number'] {
+	height: 1.8em;
+	font-size: 200%;
+}
 
+#txtNickname {
+	width: 200px;
+}
+
+#txtPass {
+	width: 140px;
+}
 
 
 
 /*************************************************
 * 大会オープニング画面
 **************************************************/
+#lblPasscode {
+	font-size: 2em;
+	color: blue;
+}
+
+.div-players {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 8px;
+	background-color: #FAC8E8;
+	border-radius: 6px;
+}
+
+.div-players .player {
+	display: inline-block;
+	margin: 4px;
+	padding: 4px;
+	background-color: white;
+	color: blue;
+	border-radius: 6px;
+}
+
+.div-rules {
+	padding-left: 60px;
+	color: #aaa;
+	font-size: 80%;
+	text-align: left;
+}
+
+.div-rules h3 {
+	margin-left: 20px;
+	color: red;
+	font-size: 120%;
+}
 
 
 /*************************************************
