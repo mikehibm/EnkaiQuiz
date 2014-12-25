@@ -1,0 +1,16 @@
+{
+  "name": "EnkaiQuiz",
+  "version": "0.1.0",
+  "author": "makotoishida@gmail.com>",
+  "description": "A simple quiz server",
+  "dependencies": {},
+  "main": "./server.js",  
+  "keywords": [
+    "azure"
+  ],  
+  "noAnalyze": true,
+  "license": "Apache",
+  "engines": {
+    "node": ">=0.6.14"
+  }
+}
