@@ -55,6 +55,13 @@ io.on('connection', function(socket){
         //socket.broadcast.emitを使うと該当socket以外の全員に送信される。
         socket.broadcast.emit('message', {'message': data.letter});
     });
+    
+    socket.on('open_game', function(data){
+       var gameName = data.gamename;
+       console.log("open_game: gameName=" + gameName);
+       socket.emit('open_game_ok', { gamename: gameName, passcode: '112233' }); 
+    });
+    
 });
 
 server.listen(process.env.PORT || 8080);

@@ -2,18 +2,128 @@
 <html lang="ja">
 	<head>
 	    <meta charset="utf-8" />
-	    <meta name="viewport" content="width=device-width" />
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">			
 		<title>Enkai Quiz</title>
 		
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+			
+	 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	    <!--[if lt IE 9]>
+	      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	    <![endif]-->			
+			
 	    <link href="css/main.css" rel="stylesheet" type="text/css" />
 		<script src="js/jquery-1.11.2.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 	</head>
 	<body>
-		<div class="title">
-			<h3>Quiz</h3>
-		</div>
-		
+		<div class="container-fluid">
+			<div class="title">
+				<h3>Quiz</h3>
+			</div>
+			
+			<!--
+			*************************************************
+			* タイトル画面
+			**************************************************
+			-->
+			<div id="topPage" class="page">
+				<div class="div-center">
+					<button type="button" class="button-open btn btn-large">主催する</button>
+					<button type="button" class="button-play btn btn-large btn-primary">参加する</button>
+					
+					<div class="div-button-watch">
+						<button type="button" class="button-watch btn btn-large">観戦する</button>
+					</div>
+				</div>
+			</div>
+
+			<!--
+			*************************************************
+			* 大会名称入力画面
+			**************************************************
+			-->
+			<div id="gameNamePage" class="page">
+				<div class="div-center">
+					<form>
+					  	<div class="form-group">
+					    	<label for="txtGameName">大会の名称（例： ◯◯電機忘年会）</label>
+							<input type="text" maxlength="20" id="txtGameName" class="form-control" />
+					  	</div>
+						<button type="button" class="button-next btn btn-large btn-primary">次へ</button>
+					</form>
+				</div>
+			</div>
+			
+			
+			
+			<!--
+			*************************************************
+			* 問題セット選択画面
+			**************************************************
+			-->
+			<div id="quizSetPage" class="page">
+				<div class="div-center">
+					<form>
+					  	<div class="form-group">
+					    	<label for="drpQuizSet">クイズを選んで下さい。</label>
+							<select id="drpQuizSet" class="form-control" >
+								<option value="0">さんすう</option>
+								<option value="1">英語</option>
+								<option value="2">地理・歴史</option>
+								<option value="3">ITクイズ</option>
+							</select>
+					  	</div>
+						<button type="button" class="button-next btn btn-large btn-primary">次へ</button>
+					</form>
+				</div>
+			</div>
+			
+			
+			
+			<!--
+			*************************************************
+			* 参加者パスコード入力画面
+			**************************************************
+			-->
+			<div id="passCodePage" class="page">
+			</div>
+			
+			
+			
+			
+			<!--
+			*************************************************
+			* 大会オープニング画面
+			**************************************************
+			-->
+			<div id="gameStartPage" class="page">
+			</div>
+			
+			
+			<!--
+			*************************************************
+			* クイズ画面
+			**************************************************
+			-->
+			<div id="quizPage" class="page">
+			</div>
+			
+			
+			
+			<!--
+			*************************************************
+			* 順位表画面
+			**************************************************
+			-->
+			<div id="rankingPage" class="page">
+			</div>
+			
+			
+		</div>		
 		<script src="js/app.js"></script>
 	</body>
 </html>
