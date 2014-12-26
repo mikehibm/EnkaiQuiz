@@ -6,8 +6,9 @@ var App = window.App || {};
 	var PAGE_FADE_IN = 1000;
 	
 	App.Config = {
-		sound: true,
-		bgm: false
+		AppName: 'Enkai Quiz',
+		Sound: true,
+		Bgm: false
 	};
 	
 	App.data = {
@@ -21,6 +22,11 @@ var App = window.App || {};
 	
 	App.socket = null;
 	
+	App.setTitle = function(s){
+		s = s || App.Config.AppName;
+		$("#lblTitle").text(s);
+	};
+	
 	//*************************************************
 	//* タイトル画面
 	//*************************************************
@@ -33,6 +39,8 @@ var App = window.App || {};
 			var btnPlay = page.find(".button-play");
 			var btnWatch = page.find(".button-watch");
 			
+			App.setTitle();
+
 			btnOpen.off();
 			btnOpen.on('click', function(e){
 				if (e) e.preventDefault();
@@ -89,6 +97,8 @@ var App = window.App || {};
 			var btnNext = page.find(".button-next");
 			var txt = $("#txtGameName");
 			
+			App.setTitle();
+
 			txt.removeAttr("readonly");
 			btnNext.removeAttr("disabled");
 
@@ -126,6 +136,8 @@ var App = window.App || {};
 			var self = this;
 			var page = $(this.element);
 			
+			App.setTitle();
+
 			var drp = $("#drpQuizSet");
 			var btnNext = page.find(".button-next");
 			
@@ -168,6 +180,7 @@ var App = window.App || {};
 			var txtNickname = $("#txtNickname");
 			var txtPass = $("#txtPass");
 			
+			App.setTitle();
 			txtNickname.removeAttr("readonly");
 			txtPass.removeAttr("readonly");
 			btnNext.removeAttr("disabled");
@@ -244,13 +257,12 @@ var App = window.App || {};
 			var self = this;
 			var page = $(this.element);
 			var btnStart = page.find(".button-start");
-			var lblGameName = page.find("#lblGameName");
 			var lblPasscode = page.find("#lblPasscode");
 			var lblCount = page.find("#lblCount");
 			var divPlayers = page.find(".div-players");
 			var lblWait = page.find(".label-wait");
 			
-			lblGameName.text(App.data.gameName);
+			App.setTitle(App.data.gameName);
 			lblPasscode.text(App.data.passCode);
 			
 			if (App.data.mode === 'master'){
@@ -332,6 +344,7 @@ var App = window.App || {};
 			var quiz = App.data.quiz;
 			console.log("App.data.quiz = ", quiz);
 			
+			App.setTitle(App.data.gameName);
 			lblStageName.text(App.data.stageName);
 			
 			btnNext.hide();
@@ -346,6 +359,10 @@ var App = window.App || {};
 			}
 				
 			self.update();
+			
+			$("span.button-answer").on('click', function(){
+				alert('clicked');
+			});
 			
 			page.fadeIn(PAGE_FADE_IN);
 		},
@@ -401,7 +418,19 @@ var App = window.App || {};
 			var self = this;
 			var page = $(this.element);
 			var lblPosition = page.find("#lblPosition");
-			lblPosition.text((App.data.current+1) + " / " + App.data.total);			
+			var lblQuestion = page.find("#lblQuestion");
+			var divAnswers = page.find(".div-answers");
+			
+			lblPosition.text((App.data.current+1) + " / " + App.data.total);
+			lblQuestion.text(App.data.quiz.question);
+			
+			divAnswers.empty();
+			var answers = App.data.quiz.answers;
+			var len = answers.length;
+			for (var i = 0; i < len; i++){
+				var html = "<span class='button-answer'>" + answers[i] + "</span>";
+				divAnswers.append(html);
+			}
 		}
 	};
 
@@ -415,6 +444,8 @@ var App = window.App || {};
 			var page = $(this.element);
 			var btnBack = page.find(".button-back");
 			
+			App.setTitle(App.data.gameName);
+
 			btnBack.off();
 			btnBack.on('click', function(e){
 				if (e) e.preventDefault();
@@ -440,13 +471,10 @@ var App = window.App || {};
 
 	
 $(function(){
-	console.log("動いています!", new Date());
-	
 	App.socket = io();
 	
 	App.socket.on('procstat', function(data){
 		console.log("Received 'procstat':", data);
-		
 		App.TopPage.update(data);
 	});
 	

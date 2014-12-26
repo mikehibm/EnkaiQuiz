@@ -22,7 +22,7 @@
 	<body>
 		<div class="container-fluid">
 			<div class="title">
-				<h3>Enkai Quiz</h3>
+				<h3 id="lblTitle">Enkai Quiz</h3>
 			</div>
 			
 			<!--
@@ -115,7 +115,6 @@
 			-->
 			<div id="gameStartPage" class="page">
 				<div class="div-top">
-					<h3 id="lblGameName"></h3>
 					パスコード: <span id="lblPasscode"></span>
 					人数: <span id="lblCount"></span>
 				</div>
@@ -145,11 +144,12 @@
 			**************************************************
 			-->
 			<div id="quizPage" class="page">
-				<h3 id="lblStageName">クイズ画面</h3>
 				<div class="div-top">
-					<span id="lblPosition"></span>
-					
+					<h4 id="lblStageName"></h4>
+					<span id="lblPosition"></span><br />
+					<span id="lblQuestion"></span>
 				</div>
+				<div class="div-answers"></div>
 				<div class="div-bottom">
 					<button type="button" class="button-next btn btn-large btn-primary">次へ</button>
 				</div>

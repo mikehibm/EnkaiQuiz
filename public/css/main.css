@@ -166,7 +166,36 @@ form select {
 /*************************************************
 * クイズ画面
 **************************************************/
+#quizPage h4 {
+	margin-left: 20px;
+	color: #444;
+}
 
+#quizPage .div-top {
+	font-size: 180%;
+	color: #444;
+}
+
+#quizPage .div-answers {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 8px;
+	background-color: #FAC8E8;
+	border-radius: 6px;
+}
+
+#quizPage .button-answer {
+	display: inline-block;
+	min-width:60px;
+	min-height:34px;
+	margin: 4px;
+	padding: 4px;
+	background-color: white;
+	color: blue;
+	border-radius: 6px;
+	text-align: center;
+}
 
 
 /*************************************************
