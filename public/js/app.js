@@ -59,9 +59,22 @@ var App = window.App || {};
 			
 			page.fadeIn(PAGE_FADE_IN);
 		},
+		
 		hide: function(){
 			var page = $(this.element);
 			page.fadeOut(PAGE_FADE_OUT);
+		},
+		
+		update: function(data){
+			var self = this;
+			var page = $(this.element);
+			var lblPID = page.find("#lblPID");
+			var lblConCount = page.find("#lblConCount");
+			var lblGameCount = page.find("#lblGameCount");
+			
+			lblPID.text("PID: " + data.pid);
+			lblConCount.text("Connections: " + data.conCount);
+			lblGameCount.text("Games: " + data.gameCount);
 		}	
 	};
 		
@@ -179,8 +192,13 @@ var App = window.App || {};
 				}
 				App.data.passCode = passCode;
 				
-				App.socket.emit('send_pass', { nickname: nickname, passCode: passCode, mode: options.mode });
-				console.log('Sent message "send_pass".', nickname, passCode, options.mode);
+				var data = { 
+					nickname: nickname, 
+					passCode: passCode, 
+					mode: options.mode 
+				};
+				App.socket.emit('send_pass', data);
+				console.log('Sent "send_pass": ', data);
 				
 				txtNickname.attr("readonly", "readonly");
 				txtPass.attr("readonly", "readonly");
@@ -250,6 +268,20 @@ var App = window.App || {};
 			btnStart.on('click', function(e){
 				if (e) e.preventDefault();
 				console.log("クイズ大会開始!");
+				
+				var stage = App.data.quizSet[App.data.quizSetIndex];
+				App.data.current = 0;
+				var data = { 
+					gameName: App.data.gameName,
+					passCode: App.data.passCode,
+					stageName: stage.name,
+					current: App.data.current,
+					total: stage.quizes.length,
+					quiz: stage.quizes[App.data.current] 
+				};
+				App.socket.emit('start_game', data);
+				console.log("'start_game' sent: ", data);
+				
 				self.hide();
 				App.QuizPage.show();
 			});
@@ -293,25 +325,84 @@ var App = window.App || {};
 		show: function(){
 			var self = this;
 			var page = $(this.element);
+			var lblStageName = page.find("#lblStageName");
 			var btnNext = page.find(".button-next");
-			
 			console.log("QuizPage.show: ", App.data);
 			
-			var quiz = App.data.quizSet[App.data.quizSetIndex];
-			console.log("Quiz = ", quiz);
+			var quiz = App.data.quiz;
+			console.log("App.data.quiz = ", quiz);
 			
+			lblStageName.text(App.data.stageName);
+			
+			btnNext.hide();
 			btnNext.off();
-			btnNext.on('click', function(e){
-				if (e) e.preventDefault();
-				console.log("Next");
-			});
+			if (App.data.mode === 'master'){
+				btnNext.show();
+				btnNext.on('click', function(e){
+					if (e) e.preventDefault();
+					console.log("Next");
+					self.next();
+				});
+			}
+				
+			self.update();
 			
 			page.fadeIn(PAGE_FADE_IN);
 		},
+		
 		hide: function(){
 			var page = $(this.element);
 			page.fadeOut(PAGE_FADE_OUT);
-		}	
+		},
+		
+		next: function(){
+			var self = this;
+			var page = $(this.element);
+			var stage = App.data.quizSet[App.data.quizSetIndex];
+			App.data.current++;
+			if (App.data.current >= stage.quizes.length){
+				self.finish();
+				return;
+			}
+			
+			var data = { 
+				gameName: App.data.gameName,
+				passCode: App.data.passCode,
+				stageName: stage.name,
+				current: App.data.current,
+				total: stage.quizes.length,
+				quiz: stage.quizes[App.data.current] 
+			};
+			App.socket.emit('quiz_next', data);
+			console.log("'quiz_next' sent: ", data);
+			
+			//self.update();			
+		},
+		
+		finish: function(){
+			var self = this;
+			var page = $(this.element);
+			var stage = App.data.quizSet[App.data.quizSetIndex];
+			
+			var data = { 
+				gameName: App.data.gameName,
+				passCode: App.data.passCode,
+				stageName: stage.name,
+				current: App.data.current,
+				total: stage.quizes.length
+			};
+			App.socket.emit('quiz_finish', data);
+			
+//			self.hide();
+//			App.RankingPage.show(App.TopPage);
+		},
+		
+		update: function(){
+			var self = this;
+			var page = $(this.element);
+			var lblPosition = page.find("#lblPosition");
+			lblPosition.text((App.data.current+1) + " / " + App.data.total);			
+		}
 	};
 
 	//*************************************************
@@ -352,11 +443,12 @@ $(function(){
 	console.log("動いています!", new Date());
 	
 	App.socket = io();
-	console.log("connected", new Date);
 	
-	App.socket.on('message', function(data){
-	    console.log(data.message);
-	});	
+	App.socket.on('procstat', function(data){
+		console.log("Received 'procstat':", data);
+		
+		App.TopPage.update(data);
+	});
 	
 	//「主催する」の結果を受信
 	App.socket.on('open_game_ok', function(data){
@@ -391,10 +483,80 @@ $(function(){
 	
 	//参加者が追加された時
 	App.socket.on('new_player', function(data){
+		if (App.data.passCode !== data.passCode){
+			//自分が参加しているゲームと違う場合は無視。
+			return;
+		}
 		App.data.players = data.players;
 		App.GameStartPage.update();
 	});
 
+	//「始める！」の結果を受信
+	App.socket.on('start_game_result', function(data){
+		console.log('Received "start_game_result".', data);
+		
+		if (App.data.passCode !== data.passCode){
+			//自分が参加しているゲームと違う場合は無視。
+			return;
+		}
+		if (data.error){
+			alert(data.error);
+			return;
+		}
+		
+		App.data.stageName = data.stageName;
+		App.data.current = data.current;
+		App.data.total = data.total;
+		App.data.quiz = data.quiz;
+		
+		App.GameStartPage.hide();
+		App.QuizPage.show();
+	});
+	
+	//クイズ画面の「次へ」の結果を受信
+	App.socket.on('quiz_next_ok', function(data){
+		console.log('Received "quiz_next_ok".', data);
+		
+		if (App.data.passCode !== data.passCode){
+			//自分が参加しているゲームと違う場合は無視。
+			return;
+		}
+		
+		App.data.stageName = data.stageName;
+		App.data.current = data.current;
+		App.data.total = data.total;
+		App.data.quiz = data.quiz;
+		
+		App.QuizPage.update();
+	});
+	
+	App.socket.on('quiz_finish_result', function(data){
+		console.log('Received "quiz_finish_result".', data);
+		
+		if (App.data.passCode !== data.passCode){
+			//自分が参加しているゲームと違う場合は無視。
+			return;
+		}
+		if (data.error){
+			alert(data.error);
+			return;
+		}
+		
+		App.data.stageName = data.stageName;
+		App.data.current = data.current;
+		App.data.total = data.total;
+		
+		App.QuizPage.hide();
+		App.RankingPage.show(App.TopPage);
+	});
+	
+	App.socket.on('exit', function(data){
+		console.log("Received 'exit': ", data);
+		App.data.players = data.players;
+		App.GameStartPage.update();
+		App.QuizPage.update();
+	});
+	
 	//最初の画面を表示。
 	App.TopPage.show();
 });

@@ -19,15 +19,15 @@ var server = http.createServer(function (request, response) {
             });
 
             break;
-        case '/hello':
-        case '/hello/':
-            response.writeHead(200, {'Content-Type': 'text/html'});
-            response.write("<!DOCTYPE html><html lang='ja'>");
-            response.write("  <head><meta charset='UTF-8'></head>");
-            response.write("  <body>Hello! <br />こんにちは!</body>");
-            response.write("</html>");
-            response.end();
-            break;
+//        case '/hello':
+//        case '/hello/':
+//            response.writeHead(200, {'Content-Type': 'text/html'});
+//            response.write("<!DOCTYPE html><html lang='ja'>");
+//            response.write("  <head><meta charset='UTF-8'></head>");
+//            response.write("  <body>Hello! <br />こんにちは!</body>");
+//            response.write("</html>");
+//            response.end();
+//            break;
         default:
             response.writeHead(404);
             response.write("Not found - 404");
@@ -39,22 +39,46 @@ var server = http.createServer(function (request, response) {
 var io = require('socket.io')(server);
 
 io.on('connection', function(socket){
-    console.log('a user connected');
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
-    });
+    console.log('a user connected', process);
     
-    //socket.emitだと一人だけに送信する。io.emitだと全員に送信する。
-    io.emit('message', {'message': 'ようこそ!  サーバー時刻は ' + new Date() + "です。"});
+    socket.data = socket.data || {};
+    socket.data.startTime = new Date();
 
-//    setInterval(function(){
-//        socket.emit('clock', {'date': new Date()});
-//    }, 1 * 1000);
+    var emitProcStat = function(){
+        var procstat = {
+            pid: process.pid || 0,
+            conCount: socket.client.conn.server.clientsCount,
+            gameCount: myapp.games.length,
+        };
     
-    //recieve client data
-    socket.on('client_data', function(data){
-        //socket.broadcast.emitを使うと該当socket以外の全員に送信される。
-        socket.broadcast.emit('message', {'message': data.letter});
+        //socket.emitだと一人だけに送信する。io.emitだと全員に送信する。
+        io.emit('procstat', procstat);
+    };
+    
+    emitProcStat();
+    
+    socket.on('disconnect', function(){
+        console.log('user disconnected', socket.data);
+        
+        if (socket.data.player){
+            //player.passCodeから参加しているgameを探す。
+            var game = myapp.findGame(socket.data.player.passCode);
+            game.removePlayer(socket.data.player);
+            
+            var data = { 
+                player: socket.data.player,
+                players: game.players
+            };
+            io.emit('exit', data);
+            
+            //参加者が居なくなった終了済みの大会を削除。
+            if (game.state === myapp.Game.STATE_FINISHED && game.players.length <= 0){
+                myapp.removeGame(game);
+                console.log("Game '"+ game.gameName + "' was removed.");
+            }
+        }
+        
+        emitProcStat();
     });
     
     socket.on('open_game', function(data){
@@ -63,6 +87,7 @@ io.on('connection', function(socket){
         //Gameオブジェクトを生成。
         var game = myapp.createGame(data.gameName);
         
+        //主催者だけに返信。
         socket.emit('open_game_ok', { 
            gameName: game.gameName, 
            passCode: game.passCode,
@@ -70,6 +95,8 @@ io.on('connection', function(socket){
            mode: 'master',
            players: game.players 
         }); 
+
+        emitProcStat();
     });
     
     socket.on('send_pass', function(data){
@@ -77,6 +104,11 @@ io.on('connection', function(socket){
        
         //data.passCodeから参加受付中のgameを探す。
         var game = myapp.findGame(data.passCode);
+        
+        if (game && game.state !== myapp.Game.STATE_WAITING && data.mode === 'play'){
+           socket.emit('send_pass_result', { error: '大会はもう始まっています。', field: 'passCode', mode: data.mode }); 
+           return;
+        }
 
         //passCodeが一致するものが見つからなければエラーを返す。
         if (!game){
@@ -92,9 +124,11 @@ io.on('connection', function(socket){
        
         if (data.mode == 'play'){
             //参加者リストに追加。
-            game.addPlayer(data.nickname);
+            var player = game.addPlayer(data.nickname, data.mode, data.passCode);
+            //ソケットにPlayerを紐付ける。
+            socket.data.player = player;
             
-            //参加した人以外の全員に通知。
+            //参加した人以外の全員に通知。(本来は該当の大会の参加者のみにおくるべき)
             socket.broadcast.emit('new_player', { 
                gameName: game.gameName, 
                passCode: game.passCode,
@@ -113,6 +147,71 @@ io.on('connection', function(socket){
            players: game.players
         }); 
        
+    });
+    
+    socket.on('start_game', function(data){
+        console.log("start_game: ", data);
+        
+        //data.passCodeから参加受付中のgameを探す。
+        var game = myapp.findGame(data.passCode);
+        if (!game){
+           socket.emit('start_game_result', { error: '大会の情報が見つかりません。', passCode: data.passCode }); 
+           return;
+        }
+        if (game.state !== myapp.Game.STATE_WAITING){
+           socket.emit('start_game_result', { error: '大会は既に始まっているかまたは終了しています。', passCode: data.passCode }); 
+           return;
+        }
+        game.start();
+
+        //接続している全員に通知。(本来は該当の大会の参加者のみにおくるべき)
+        io.emit('start_game_result', { 
+            gameName: data.gameName, 
+            passCode: data.passCode,
+            stageName: data.stageName,
+            current: data.current,
+            total: data.total,
+            quiz: data.quiz
+        });
+
+        emitProcStat();
+    });
+    
+    socket.on('quiz_next', function(data){
+        console.log("quiz_next: ", data);
+        
+        //接続している全員に通知。(本来は該当の大会の参加者のみにおくるべき)
+        io.emit('quiz_next_ok', { 
+            gameName: data.gameName, 
+            passCode: data.passCode,
+            stageName: data.stageName,
+            current: data.current,
+            total: data.total,
+            quiz: data.quiz
+        });
+    });
+    
+    socket.on('quiz_finish', function(data){
+        console.log("quiz_finish: ", data);
+        
+        //data.passCodeから参加受付中のgameを探す。
+        var game = myapp.findGame(data.passCode);
+        if (!game){
+           socket.emit('quiz_finish_result', { error: '大会の情報が見つかりません。', passCode: data.passCode }); 
+           return;
+        }
+        game.finish();
+
+        //接続している全員に通知。(本来は該当の大会の参加者のみにおくるべき)
+        io.emit('quiz_finish_result', { 
+            gameName: data.gameName, 
+            passCode: data.passCode,
+            stageName: data.stageName,
+            current: data.current,
+            total: data.total
+        });
+
+        emitProcStat();
     });
     
 });
