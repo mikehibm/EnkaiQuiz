@@ -8,7 +8,8 @@ var App = window.App || {};
 	App.Config = {
 		AppName: 'Enkai Quiz',
 		Sound: true,
-		Bgm: false
+		Bgm: false,
+		ShowPlayersTop: 5
 	};
 	
 	App.data = {
@@ -279,8 +280,7 @@ var App = window.App || {};
 			btnStart.off();
 			btnStart.on('click', function(e){
 				if (e) e.preventDefault();
-				console.log("クイズ大会開始!");
-				
+
 				var stage = App.data.quizSet[App.data.quizSetIndex];
 				App.data.current = 0;
 				var data = { 
@@ -337,7 +337,7 @@ var App = window.App || {};
 		show: function(){
 			var self = this;
 			var page = $(this.element);
-			var lblStageName = page.find("#lblStageName");
+			//var lblStageName = page.find("#lblStageName");
 			var btnNext = page.find(".button-next");
 			console.log("QuizPage.show: ", App.data);
 			
@@ -345,7 +345,7 @@ var App = window.App || {};
 			console.log("App.data.quiz = ", quiz);
 			
 			App.setTitle(App.data.gameName);
-			lblStageName.text(App.data.stageName);
+			//lblStageName.text(App.data.stageName);
 			
 			btnNext.hide();
 			btnNext.off();
@@ -358,11 +358,11 @@ var App = window.App || {};
 				});
 			}
 				
-			self.update();
-			
-			$("span.button-answer").on('click', function(){
+			page.on('click', "span.button-answer", function(){
 				alert('clicked');
 			});
+			
+			self.update();
 			
 			page.fadeIn(PAGE_FADE_IN);
 		},
@@ -420,16 +420,31 @@ var App = window.App || {};
 			var lblPosition = page.find("#lblPosition");
 			var lblQuestion = page.find("#lblQuestion");
 			var divAnswers = page.find(".div-answers");
+			var divPlayers = page.find(".div-players");
 			
+			//Show question
 			lblPosition.text((App.data.current+1) + " / " + App.data.total);
 			lblQuestion.text(App.data.quiz.question);
-			
+
+			//Show answers			
 			divAnswers.empty();
 			var answers = App.data.quiz.answers;
 			var len = answers.length;
 			for (var i = 0; i < len; i++){
 				var html = "<span class='button-answer'>" + answers[i] + "</span>";
 				divAnswers.append(html);
+			}
+			
+			//Show ranking
+			divPlayers.empty();
+			var player, len = Math.min(App.data.players.length, App.Config.ShowPlayersTop);
+			for (var i = 0; i < len; i++){
+				player = App.data.players[i];
+				divPlayers.append("<span class='player'>" + player.nickname + "(" + player.point + ")" + "</span>");
+			}
+			var rest = App.data.players.length - len;
+			if (rest > 0){
+				divPlayers.append("<span class='player-rest'>他 " + rest + "人" + "</span>");
 			}
 		}
 	};

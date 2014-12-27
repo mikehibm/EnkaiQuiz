@@ -52,13 +52,13 @@ form select {
 
 .div-top {
 	width: 100%;
-	margin-top: 32px;
+	margin-top: 24px;
 	text-align: center;
 }
 
 .div-center {
 	width: 100%;
-	margin-top: 120px;
+	margin-top: 100px;
 	text-align: center;
 }
 
@@ -79,6 +79,35 @@ form select {
 	margin-left: 10px;
 	margin-right: 10px;
 }
+
+.div-players {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 8px;
+	background-color: #FAC8E8;
+	border-radius: 6px;
+}
+
+.div-players .player {
+	display: inline-block;
+	margin: 4px;
+	padding: 4px;
+	background-color: white;
+	color: blue;
+	border-radius: 6px;
+}
+
+.div-players .player-rest {
+	display: inline-block;
+	margin: 4px;
+	padding: 4px;
+	background-color: white;
+	color: #888;
+	border-radius: 6px;
+}
+
+
 
 
 
@@ -126,37 +155,20 @@ form select {
 /*************************************************
 * 大会オープニング画面
 **************************************************/
-#lblPasscode {
+#gameStartPage #lblPasscode {
 	font-size: 2em;
 	color: blue;
 }
 
-.div-players {
-	width: 95%;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 8px;
-	background-color: #FAC8E8;
-	border-radius: 6px;
-}
 
-.div-players .player {
-	display: inline-block;
-	margin: 4px;
-	padding: 4px;
-	background-color: white;
-	color: blue;
-	border-radius: 6px;
-}
-
-.div-rules {
+#gameStartPage .div-rules {
 	padding-left: 60px;
 	color: #aaa;
 	font-size: 80%;
 	text-align: left;
 }
 
-.div-rules h3 {
+#gameStartPage .div-rules h3 {
 	margin-left: 20px;
 	color: red;
 	font-size: 120%;
@@ -172,6 +184,8 @@ form select {
 }
 
 #quizPage .div-top {
+	margin-top: 12px;
+	margin-bottom: 12px;
 	font-size: 180%;
 	color: #444;
 }
@@ -180,8 +194,9 @@ form select {
 	width: 95%;
 	margin-left: auto;
 	margin-right: auto;
+	margin-bottom: 8px;
 	padding: 8px;
-	background-color: #FAC8E8;
+	background-color: #3D8DFC;
 	border-radius: 6px;
 }
 
@@ -193,15 +208,22 @@ form select {
 	padding: 4px;
 	background-color: white;
 	color: blue;
-	border-radius: 6px;
+	font-size: 125%;
 	text-align: center;
+	border-radius: 6px;
+}
+
+#quizPage .div-players {
+	margin-bottom: 8px;
 }
 
 
 /*************************************************
 * 順位表画面
 **************************************************/
-
+#rankingPage {
+	padding:8px;
+}
 
 
 
