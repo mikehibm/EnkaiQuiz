@@ -21,7 +21,37 @@ App.data.quizSet = [
 				question: "(1+3) x 3 = ?",
 				answers: ["12","14","16"],
 				correct: 0
-			}
+			},
+			{ 
+				question: "1 + 2 + 3 + 4 + 7 = ?",
+				answers: ["15","19","17"],
+				correct: 2
+			},
+			{ 
+				question: "20 + 3 - 7 = ?",
+				answers: ["15","16","17"],
+				correct: 1
+			},
+			{ 
+				question: "(8 + 3) x 3 = ?",
+				answers: ["33","35","34"],
+				correct: 0
+			},
+			{ 
+				question: "(4 + 2) / (3 - 1) = ?",
+				answers: ["3","5","2"],
+				correct: 0
+			},
+			{ 
+				question: "32 x 4 = ?",
+				answers: ["126","208","128"],
+				correct: 2
+			},
+			{ 
+				question: "129 x 3 = ?",
+				answers: ["414","387","396"],
+				correct: 1
+			}		
 		]
 	},
 	{
@@ -46,6 +76,11 @@ App.data.quizSet = [
 				question: "Vis(?)al Systems",
 				answers: ["u","i","o"],
 				correct: 0 
+			},
+			{ 
+				question: "Two plus nine is ?",
+				answers: ["12","10","11"],
+				correct: 2 
 			}
 		]
 	},
@@ -86,6 +121,16 @@ App.data.quizSet = [
 				question: "JavascriptはTypescriptよりも先に作られた。",
 				answers: ["YES","NO"],
 				correct: 0 
+			},
+			{ 
+				question: "Math.floor(3.19)",
+				answers: ["3.1","4", "3"],
+				correct: 2
+			},
+			{ 
+				question: "Math.abs(-125)",
+				answers: ["-1","125", "0"],
+				correct: 1
 			},
 			{ 
 				question: "C#の設計者の名前は「アンダース・ヘルスバード」である。",
