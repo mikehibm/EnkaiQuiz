@@ -198,6 +198,7 @@ form select {
 	padding: 8px;
 	background-color: #3D8DFC;
 	border-radius: 6px;
+	text-align: center;
 }
 
 #quizPage .button-answer {
@@ -215,6 +216,30 @@ form select {
 
 #quizPage .div-players {
 	margin-bottom: 8px;
+}
+
+#quizPage .msg-correct {
+	display: inline-block;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	font-size: 220%;
+	color: blue;
+	border: 4px solid yellow;
+	border-radius: 6px;
+}
+
+#quizPage .msg-ng {
+	display: inline-block;
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	font-size: 220%;
+	color: red;
+	border: 4px solid pink;
+	border-radius: 6px;
 }
 
 

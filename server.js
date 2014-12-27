@@ -19,15 +19,6 @@ var server = http.createServer(function (request, response) {
             });
 
             break;
-//        case '/hello':
-//        case '/hello/':
-//            response.writeHead(200, {'Content-Type': 'text/html'});
-//            response.write("<!DOCTYPE html><html lang='ja'>");
-//            response.write("  <head><meta charset='UTF-8'></head>");
-//            response.write("  <body>Hello! <br />こんにちは!</body>");
-//            response.write("</html>");
-//            response.end();
-//            break;
         default:
             response.writeHead(404);
             response.write("Not found - 404");
@@ -179,7 +170,14 @@ io.on('connection', function(socket){
     
     socket.on('quiz_next', function(data){
         console.log("quiz_next: ", data);
+        var game = myapp.findGame(data.passCode);
+        if (!game){
+           socket.emit('quiz_next_result', { error: '大会の情報が見つかりません。', passCode: data.passCode }); 
+           return;
+        }
         
+        game.next(data.quiz);
+
         //接続している全員に通知。(本来は該当の大会の参加者のみにおくるべき)
         io.emit('quiz_next_ok', { 
             gameName: data.gameName, 
@@ -212,6 +210,34 @@ io.on('connection', function(socket){
         });
 
         emitProcStat();
+    });
+    
+    socket.on('answer', function(data){
+        console.log("answer: ", data);
+        var game = myapp.findGame(data.passCode);
+        if (!game){
+           socket.emit('answer_result', { error: '大会の情報が見つかりません。' }); 
+           return;
+        }
+        
+        var player = game.findNickname(data.nickname);
+        if (!player){
+           socket.emit('answer_result', { error: '参加者の情報が見つかりません。' }); 
+           return;
+        }
+        
+        if (data.correct){
+            player.point += game.correct(data.nickname);
+        } else {
+            player.point += game.ng();
+        }
+       
+        //全員に最新の得点を通知。
+        var send_data = {
+            passCode: data.passCode,
+            players: game.players
+        };
+        io.emit('answer_result', send_data); 
     });
     
 });

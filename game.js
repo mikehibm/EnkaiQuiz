@@ -2,7 +2,8 @@
 
 var config = exports.config = {
 	passCodeLength: 6,
-	passCodeChars: "0123456789"			//"abcdefghjkmnpqrstuwxyz3456789"
+	passCodeChars: "0123456789",		//"abcdefghjkmnpqrstuwxyz3456789"
+	pointWinners: 3						//正解時に得点を得る人の数(例：3なら最初の3人がそれぞれ+3,+2,+1点)
 };
 var games = exports.games = [];
 
@@ -43,6 +44,7 @@ var Game = exports.Game = function(gameName){
 	this.passCode = generatePassCode();
 	this.players = [];
 	this.state = "waiting";		//waiting/playing/finished
+	this.currentQuiz = null;
 	
 	this.findNickname = function(nickname){
 		var len = this.players.length, player;
@@ -75,6 +77,23 @@ var Game = exports.Game = function(gameName){
 	this.finish = function(){
 		this.state = "finished";
 	};
+	
+	this.next = function(quiz){
+		this.currentQuiz = quiz;
+		this.currentQuiz.winners = [];
+	};
+	
+	this.correct = function(nickname){
+		if (!this.currentQuiz) return 0;
+		
+		this.currentQuiz.winners.push(nickname);
+		var point = Math.max(config.pointWinners + 1 - this.currentQuiz.winners.length, 0);
+		return point;
+	};
+	
+	this.ng = function(){
+		return -1;
+	}
 };
 Game.STATE_WAITING = "waiting";
 Game.STATE_PLAYING = "playing";
