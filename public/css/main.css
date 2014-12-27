@@ -190,6 +190,8 @@ form .button-back {
 #quizPage .div-top {
 	margin-top: 12px;
 	margin-bottom: 12px;
+	padding-left: 8px;	
+	padding-right: 8px;
 	font-size: 180%;
 	color: #444;
 }
