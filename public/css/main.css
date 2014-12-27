@@ -50,6 +50,10 @@ form select {
 	margin-right: auto;
 }
 
+form .button-back {
+	margin-right: 60px;
+}
+
 .div-top {
 	width: 100%;
 	margin-top: 24px;

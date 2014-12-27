@@ -34,19 +34,16 @@ var App = window.App || {};
 	//*************************************************
 	App.TopPage = {
 		element: "#topPage",
-		show: function(){
+		init: function(){
 			var self = this;
-			var page = $(this.element);
-			var btnOpen = page.find(".button-open");
-			var btnPlay = page.find(".button-play");
-			var btnWatch = page.find(".button-watch");
+			var el = this.el = $(this.element);
+			var btnOpen = this.btnOpen = el.find(".button-open");
+			var btnPlay  = this.btnPlay = el.find(".button-play");
+			var btnWatch = this.btnWatch = el.find(".button-watch");
 			
-			App.setTitle();
-
 			btnOpen.off();
 			btnOpen.on('click', function(e){
 				if (e) e.preventDefault();
-				console.log("主催する!");
 				self.hide();
 				App.GameNamePage.show();
 			});
@@ -54,7 +51,6 @@ var App = window.App || {};
 			btnPlay.off();
 			btnPlay.on('click', function(e){
 				if (e) e.preventDefault();
-				console.log("参加する!");
 				self.hide();
 				App.PassCodePage.show({mode: "play"});
 			});
@@ -62,25 +58,24 @@ var App = window.App || {};
 			btnWatch.off();
 			btnWatch.on('click', function(e){
 				if (e) e.preventDefault();
-				console.log("観戦する!");
 				self.hide();
 				App.PassCodePage.show({mode: "watch"});
 			});
-			
-			page.fadeIn(PAGE_FADE_IN);
+		},
+
+		show: function(){
+			App.setTitle();
+			this.el.fadeIn(PAGE_FADE_IN);
 		},
 		
 		hide: function(){
-			var page = $(this.element);
-			page.fadeOut(PAGE_FADE_OUT);
+			this.el.fadeOut(PAGE_FADE_OUT);
 		},
 		
 		update: function(data){
-			var self = this;
-			var page = $(this.element);
-			var lblPID = page.find("#lblPID");
-			var lblConCount = page.find("#lblConCount");
-			var lblGameCount = page.find("#lblGameCount");
+			var lblPID = this.el.find("#lblPID");
+			var lblConCount = this.el.find("#lblConCount");
+			var lblGameCount = this.el.find("#lblGameCount");
 			
 			lblPID.text("PID: " + data.pid);
 			lblConCount.text("Connections: " + data.conCount);
@@ -93,40 +88,54 @@ var App = window.App || {};
 	//**************************************************
 	App.GameNamePage = {
 		element: "#gameNamePage",
+		init: function(){
+			var el = this.el = $(this.element);
+			this.btnBack = el.find(".button-back");
+			this.btnNext = el.find(".button-next");
+			this.txt = el.find("#txtGameName");
+			
+			this.btnBack.off();
+			this.btnBack.on('click', this.onBack);
+
+			this.btnNext.off();
+			this.btnNext.on('click', this.onNext);
+		},
+
 		show: function(){
-			var self = this;
-			var page = $(this.element);
-			var btnNext = page.find(".button-next");
-			var txt = $("#txtGameName");
-			
 			App.setTitle();
-
-			txt.removeAttr("readonly");
-			btnNext.removeAttr("disabled");
-
-			btnNext.off();
-			btnNext.on('click', function(e){
-				if (e) e.preventDefault();
-				App.data.gameName = txt.val();
-				if (!App.data.gameName){
-					alert("名称を入力して下さい。");
-					txt.focus();
-					return;
-				}
-				
-				App.socket.emit('open_game', { gameName: App.data.gameName });
-				console.log('Sent message "open_game".', App.data.gameName);
-				txt.attr("readonly", "readonly");
-				btnNext.attr("disabled", "disabled");
-				//self.hide();
-			});
 			
-			page.fadeIn(PAGE_FADE_IN);
-		},	
+			this.txt.removeAttr("readonly");
+			this.btnNext.removeAttr("disabled");
+			
+			this.el.fadeIn(PAGE_FADE_IN);
+		},
+			
 		hide: function(){
-			var page = $(this.element);
-			page.fadeOut(PAGE_FADE_OUT);
-		}	
+			this.el.fadeOut(PAGE_FADE_OUT);
+		},
+		
+		onBack: function(e){
+			if (e) e.preventDefault();
+			App.GameNamePage.hide();
+			App.TopPage.show();
+		},
+		
+		onNext: function(e){
+			var self = App.GameNamePage;
+			if (e) e.preventDefault();
+			App.data.gameName = self.txt.val();
+			if (!App.data.gameName){
+				alert("名称を入力して下さい。");
+				self.txt.focus();
+				return;
+			}
+			
+			App.socket.emit('open_game', { gameName: App.data.gameName });
+			console.log('Sent message "open_game".', App.data.gameName);
+			
+			self.txt.attr("readonly", "readonly");
+			self.btnNext.attr("disabled", "disabled");
+		}
 	};
 		
 	//*************************************************
@@ -134,24 +143,15 @@ var App = window.App || {};
 	//**************************************************
 	App.QuizSetPage = {
 		element: "#quizSetPage",
-		show: function(){
+		init: function(){
 			var self = this;
-			var page = $(this.element);
+			var el = this.el = $(this.element);
+			var btnBack = this.btnBack = el.find(".button-back");
+			var btnNext =this.btnNext = el.find(".button-next");
+			var drp = this.drp = this.el.find("#drpQuizSet");
 			
-			App.setTitle();
-
-			var drp = $("#drpQuizSet");
-			var btnNext = page.find(".button-next");
-			
-			drp.empty();
-			var len = App.data.quizSet.length, quiz;
-			for (var i=0; i<len; i++){
-				quiz = App.data.quizSet[i];
-				drp.append("<option value='" + i + "'>" + quiz.name + "</option>");
-			}
-			
-			drp.removeAttr("readonly");
-			btnNext.removeAttr("disabled");
+			btnBack.off();
+			btnBack.on('click', this.onBack);
 
 			btnNext.off();
 			btnNext.on('click', function(e){
@@ -160,13 +160,34 @@ var App = window.App || {};
 				self.hide();
 				App.GameStartPage.show();
 			});
+		},
+
+		show: function(){
+			var self = this;
+			App.setTitle();
+
+			this.drp.empty();
+			var len = App.data.quizSet.length, quiz;
+			for (var i=0; i<len; i++){
+				quiz = App.data.quizSet[i];
+				this.drp.append("<option value='" + i + "'>" + quiz.name + "</option>");
+			}
 			
-			page.fadeIn(PAGE_FADE_IN);
-		},	
+			this.drp.removeAttr("readonly");
+			this.btnNext.removeAttr("disabled");
+			
+			this.el.fadeIn(PAGE_FADE_IN);
+		},
+			
 		hide: function(){
-			var page = $(this.element);
-			page.fadeOut(PAGE_FADE_OUT);
-		}	
+			this.el.fadeOut(PAGE_FADE_OUT);
+		},
+
+		onBack: function(e){
+			if (e) e.preventDefault();
+			App.QuizSetPage.hide();
+			App.GameNamePage.show();
+		}
 	};
 
 
@@ -175,17 +196,16 @@ var App = window.App || {};
 	//**************************************************
 	App.PassCodePage = {
 		element: "#passCodePage",
-		show: function(options){
+		init: function(){
 			var self = this;
-			var page = $(this.element);
-			var btnNext = page.find(".button-next");
-			var txtNickname = $("#txtNickname");
-			var txtPass = $("#txtPass");
+			var el = this.el = $(this.element);
+			var btnBack = this.btnBack = el.find(".button-back");
+			var btnNext =this.btnNext = el.find(".button-next");
+			var txtNickname = this.txtNickname = el.find("#txtNickname");
+			var txtPass = this.txtPass = el.find("#txtPass");
 			
-			App.setTitle();
-			txtNickname.removeAttr("readonly");
-			txtPass.removeAttr("readonly");
-			btnNext.removeAttr("disabled");
+			btnBack.off();
+			btnBack.on('click', this.onBack);
 
 			btnNext.off();
 			btnNext.on('click', function(e){
@@ -210,7 +230,7 @@ var App = window.App || {};
 				var data = { 
 					nickname: nickname, 
 					passCode: passCode, 
-					mode: options.mode 
+					mode: self.options.mode 
 				};
 				App.socket.emit('send_pass', data);
 				console.log('Sent "send_pass": ', data);
@@ -218,33 +238,41 @@ var App = window.App || {};
 				txtNickname.attr("readonly", "readonly");
 				txtPass.attr("readonly", "readonly");
 				btnNext.attr("disabled", "disabled");
-				//self.hide();
 			});
-			
-			page.fadeIn(PAGE_FADE_IN);
+		},
+
+		show: function(options){
+			var self = this;
+			App.setTitle();
+			this.options = options;
+			this.txtNickname.removeAttr("readonly");
+			this.txtPass.removeAttr("readonly");
+			this.btnNext.removeAttr("disabled");
+
+			this.el.fadeIn(PAGE_FADE_IN);
 		},	
 		
 		hide: function(){
-			var page = $(this.element);
-			page.fadeOut(PAGE_FADE_OUT);
+			this.el.fadeOut(PAGE_FADE_OUT);
+		},
+
+		onBack: function(e){
+			if (e) e.preventDefault();
+			App.PassCodePage.hide();
+			App.TopPage.show();
 		},
 		
 		showError: function(data){
 			alert(data.error);
 			
-			var page = $(this.element);
-			var txtNickname = page.find("#txtNickname");
-			var txtPass = page.find("#txtPass");
-			var btnNext = page.find(".button-next");
-			
-			txtNickname.removeAttr("readonly");
-			txtPass.removeAttr("readonly");
-			btnNext.removeAttr("disabled");
+			this.txtNickname.removeAttr("readonly");
+			this.txtPass.removeAttr("readonly");
+			this.btnNext.removeAttr("disabled");
 
 			if (data.field === 'passCode'){
-				txtPass.focus();
+				this.txtPass.focus();
 			} else {
-				txtNickname.focus();
+				this.txtNickname.focus();
 			}
 		}	
 	};
@@ -667,6 +695,20 @@ $(function(){
 		App.data.players = data.players;
 		App.GameStartPage.update();
 		App.QuizPage.update();
+	});
+	
+	
+	//全画面を初期化。
+	[
+		App.TopPage,
+		App.GameNamePage,
+		App.QuizSetPage,
+		App.PassCodePage,
+		App.GameStartPage,
+		App.QuizPage,
+		App.RankingPage
+	].forEach(function(page, index, arr){
+		if (page.init) page.init();
 	});
 	
 	//最初の画面を表示。
