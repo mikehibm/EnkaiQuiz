@@ -447,10 +447,11 @@ var App = window.App || {};
 			//Show winners
 			divWinners.empty();
 			if (!App.data.quiz.winners) App.data.quiz.winners = [];
-			var winner, len = App.data.quiz.winners.length;
+			var winner, len = App.data.quiz.winners.length, pointStr;
 			for (var i = 0; i < len; i++){
 				winner = App.data.quiz.winners[i];
-				divWinners.append("<span class='winner'>" + winner.nickname + "(" + winner.point + ")" + "</span>");
+				pointStr = winner.point > 0 ? "+" + winner.point : "" + winner.point;
+				divWinners.append("<span class='winner'>" + winner.nickname + "(" + pointStr + ")" + "</span>");
 			}
 		}, 
 		
@@ -510,11 +511,25 @@ var App = window.App || {};
 				}
 			});
 			
+			self.update();
 			page.fadeIn(PAGE_FADE_IN);
 		},
+		
 		hide: function(){
 			var page = $(this.element);
 			page.fadeOut(PAGE_FADE_OUT);
+		},
+		
+		update: function(){
+			var page = $(this.element);
+			var divRanking = page.find(".ranking");
+
+			divRanking.empty();
+			var player, len = App.data.players.length;
+			for (var i = 0; i < len; i++){
+				player = App.data.players[i];
+				divRanking.append("<div class='player'>" + (i+1) + ". " + player.nickname + " ... " + player.point + "点" + "</div>");
+			}
 		}	
 	};
 		

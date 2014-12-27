@@ -272,10 +272,23 @@ form select {
 	padding:8px;
 }
 
+#rankingPage .div-top h4{
+	font-size: 240%;
+	font-weight: 120%;
+	text-decoration: none;
+	color: #f6a;
+}
+
 #rankingPage .ranking {
-	
-	padding: 8px;
+	padding: 20px;
 	text-align: left;
+	font-size: 180%;
+}
+
+#rankingPage .ranking .player{
+	margin-bottom: 12px;
+	color: #44f;
+	border-bottom: dotted 1px #888;
 }
 
 
