@@ -153,7 +153,7 @@ io.on('connection', function(socket){
            socket.emit('start_game_result', { error: '大会は既に始まっているかまたは終了しています。', passCode: data.passCode }); 
            return;
         }
-        game.start();
+        game.start(data.quiz);
 
         //接続している全員に通知。(本来は該当の大会の参加者のみにおくるべき)
         io.emit('start_game_result', { 
@@ -231,11 +231,13 @@ io.on('connection', function(socket){
         } else {
             player.point += game.ng();
         }
+        game.sortPlayers();
        
-        //全員に最新の得点を通知。
+        //全員に最新の得点を通知。(本来は該当の大会の参加者のみにおくるべき)
         var send_data = {
             passCode: data.passCode,
-            players: game.players
+            players: game.players,
+            winners: game.currentQuiz.winners
         };
         io.emit('answer_result', send_data); 
     });

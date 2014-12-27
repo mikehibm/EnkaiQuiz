@@ -18,7 +18,8 @@ var App = window.App || {};
 		passCode: "",
 		mode: "",				//'play', 'watch', or 'master'
 		players: [],			//Playerの一覧 (watch, masterは含まない)
-		quizSetIndex: null
+		quizSetIndex: null,
+		quiz: null				//現在表示中のクイズ。  {question: "", answers: [], correct: 0, winners: [{nickname:"", point:0}] }
 	};
 	
 	App.socket = null;
@@ -294,8 +295,8 @@ var App = window.App || {};
 				App.socket.emit('start_game', data);
 				console.log("'start_game' sent: ", data);
 				
-				self.hide();
-				App.QuizPage.show();
+//				self.hide();
+//				App.QuizPage.show();
 			});
 			
 			page.fadeIn(PAGE_FADE_IN);
@@ -406,24 +407,29 @@ var App = window.App || {};
 		},
 		
 		update: function(){
+			if (App.data.quiz.ng) return;
+			
 			var self = this;
 			var page = $(this.element);
 			var lblPosition = page.find("#lblPosition");
 			var lblQuestion = page.find("#lblQuestion");
 			var divAnswers = page.find(".div-answers");
 			var divPlayers = page.find(".div-players");
+			var divWinners = page.find(".div-winners");
 			
-			//Show question
-			lblPosition.text((App.data.current+1) + " / " + App.data.total);
-			lblQuestion.text(App.data.quiz.question);
-
-			//Show answers			
-			divAnswers.empty();
-			var answers = App.data.quiz.answers;
-			var len = answers.length;
-			for (var i = 0; i < len; i++){
-				var html = "<div class='button-answer' data-index='" + i + "'>" + answers[i] + "</div>";
-				divAnswers.append(html);
+			if (!App.data.quiz.done) {
+				//Show question
+				lblPosition.text((App.data.current+1) + " / " + App.data.total);
+				lblQuestion.text(App.data.quiz.question);
+	
+				//Show answers			
+				divAnswers.empty();
+				var answers = App.data.quiz.answers;
+				var len = answers.length;
+				for (var i = 0; i < len; i++){
+					var html = "<div class='button-answer' data-index='" + i + "'>" + answers[i] + "</div>";
+					divAnswers.append(html);
+				}
 			}
 			
 			//Show ranking
@@ -437,9 +443,20 @@ var App = window.App || {};
 			if (rest > 0){
 				divPlayers.append("<span class='player-rest'>他 " + rest + "人" + "</span>");
 			}
+			
+			//Show winners
+			divWinners.empty();
+			if (!App.data.quiz.winners) App.data.quiz.winners = [];
+			var winner, len = App.data.quiz.winners.length;
+			for (var i = 0; i < len; i++){
+				winner = App.data.quiz.winners[i];
+				divWinners.append("<span class='winner'>" + winner.nickname + "(" + winner.point + ")" + "</span>");
+			}
 		}, 
 		
 		onClick: function(e){
+			if (App.data.quiz.done) return;
+			
 			var data = { 
 				nickname: App.data.nickname,
 				passCode: App.data.passCode,
@@ -450,12 +467,14 @@ var App = window.App || {};
 			var index = btn.data("index") -0;
 			div.empty();
 			if (App.data.quiz.correct == index){
+				App.data.quiz.done = true;
 				div.append("<div class='msg-correct'>正解！！</div>");
-				App.QuizPage.enableButtons(false);
 				data.correct = true;
 			} else {
+				App.data.quiz.ng = true;
 				div.append("<div class='msg-ng'>NG...(-1点)</div>");
 				setTimeout(function(){
+					App.data.quiz.ng = false;
 					App.QuizPage.update();
 				}, 2000);
 			}
@@ -623,10 +642,9 @@ $(function(){
 			return;
 		}
 
-		if (data.players){
-			App.data.players = data.players;
-			App.QuizPage.update();
-		}		
+		App.data.players = data.players;
+		App.data.quiz.winners = data.winners;
+		App.QuizPage.update();
 	});
 	
 	App.socket.on('exit', function(data){

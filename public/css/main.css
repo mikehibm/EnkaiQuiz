@@ -218,6 +218,28 @@ form select {
 	margin-bottom: 8px;
 }
 
+#quizPage .div-winners {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 8px;
+	margin-bottom: 8px;
+}
+
+#quizPage .div-winners .winner {
+	display: inline-block;
+	margin: 4px;
+	padding: 4px;
+	background-color: #3D8DFC;
+	color: yellow;
+	border-radius: 6px;
+}
+
+
+
 #quizPage .msg-correct {
 	display: inline-block;
 	width: 80%;
@@ -246,9 +268,14 @@ form select {
 /*************************************************
 * 順位表画面
 **************************************************/
-#rankingPage {
+#rankingPage .div-top {
 	padding:8px;
 }
 
+#rankingPage .ranking {
+	
+	padding: 8px;
+	text-align: left;
+}
 
 

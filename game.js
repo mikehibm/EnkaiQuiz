@@ -70,8 +70,10 @@ var Game = exports.Game = function(gameName){
 		});	
 	};
 	
-	this.start = function(){
+	this.start = function(quiz){
 		this.state = "playing";
+		this.currentQuiz = quiz;
+		this.currentQuiz.winners = [];
 	};
 	
 	this.finish = function(){
@@ -86,14 +88,22 @@ var Game = exports.Game = function(gameName){
 	this.correct = function(nickname){
 		if (!this.currentQuiz) return 0;
 		
-		this.currentQuiz.winners.push(nickname);
-		var point = Math.max(config.pointWinners + 1 - this.currentQuiz.winners.length, 0);
+		var point = Math.max(config.pointWinners - this.currentQuiz.winners.length, 0);
+		if (point > 0){
+			this.currentQuiz.winners.push( {nickname: nickname, point: point});
+		}
 		return point;
 	};
 	
 	this.ng = function(){
 		return -1;
 	}
+	
+	this.sortPlayers = function(){
+		this.players.sort(function(a, b){
+			return b.point - a.point;
+		});
+	};
 };
 Game.STATE_WAITING = "waiting";
 Game.STATE_PLAYING = "playing";
