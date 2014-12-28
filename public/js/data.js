@@ -73,9 +73,9 @@ App.data.quizSet = [
 				correct: 1 
 			},
 			{ 
-				question: "Vis(?)al Systems",
-				answers: ["u","i","o"],
-				correct: 0 
+				question: "だちょう",
+				answers: ["Giraffe","Zebra","Ostrich"],
+				correct: 2
 			},
 			{ 
 				question: "Two plus nine is ?",
@@ -126,6 +126,11 @@ App.data.quizSet = [
 				question: "Math.floor(3.19)",
 				answers: ["3.1","4", "3"],
 				correct: 2
+			},
+			{ 
+				question: "CSSの最新バージョンは？",
+				answers: ["3","2","4"],
+				correct: 0
 			},
 			{ 
 				question: "Math.abs(-125)",
