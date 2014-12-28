@@ -144,7 +144,6 @@ var App = window.App || {};
 	App.QuizSetPage = {
 		element: "#quizSetPage",
 		init: function(){
-			var self = this;
 			var el = this.el = $(this.element);
 			var btnBack = this.btnBack = el.find(".button-back");
 			var btnNext =this.btnNext = el.find(".button-next");
@@ -158,7 +157,6 @@ var App = window.App || {};
 		},
 
 		show: function(){
-			var self = this;
 			App.setTitle();
 
 			this.drp.empty();
@@ -200,7 +198,6 @@ var App = window.App || {};
 	App.PassCodePage = {
 		element: "#passCodePage",
 		init: function(){
-			var self = this;
 			var el = this.el = $(this.element);
 			var btnBack = this.btnBack = el.find(".button-back");
 			var btnNext =this.btnNext = el.find(".button-next");
@@ -236,7 +233,7 @@ var App = window.App || {};
 		},
 		
 		onNext: function(e){
-			var self = App.GameNamePage;
+			var self = App.PassCodePage;
 			if (e) e.preventDefault();
 			
 			var nickname = self.txtNickname.val();
@@ -314,9 +311,11 @@ var App = window.App || {};
 			} else {
 				this.btnStart.hide();
 			}
+			
+			var lblWait = this.lblWait;
 			this.lblWaitLoop = setInterval(function(){
-				this.lblWait.fadeOut(300, function(){
-					this.lblWait.fadeIn(800);
+				lblWait.fadeOut(300, function(){
+					lblWait.fadeIn(800);
 				});
 			}, 2000);
 			
@@ -349,14 +348,13 @@ var App = window.App || {};
 		},
 		
 		update: function(){
-			var self = this;
-			self.lblCount.text(App.data.players.length + "人");
+			this.lblCount.text(App.data.players.length + "人");
 			
-			self.divPlayers.empty();
+			this.divPlayers.empty();
 			var player, len = App.data.players.length;
 			for (var i = 0; i < len; i++){
 				player = App.data.players[i];
-				self.divPlayers.append("<span class='player'>" + player.nickname + "(" + player.point + ")" + "</span>");
+				this.divPlayers.append("<span class='player'>" + player.nickname + "(" + player.point + ")" + "</span>");
 			}
 		}
 	};
@@ -368,14 +366,13 @@ var App = window.App || {};
 	App.QuizPage = {
 		element: "#quizPage",
 		init: function(){
-			var self = this;
 			var el = this.el = $(this.element);
 			var lblPosition = this.lblPosition = el.find("#lblPosition");
 			var lblQuestion = this.lblQuestion = el.find("#lblQuestion");
 			var divAnswers = this.divAnswers = el.find(".div-answers");
 			var divPlayers = this.divPlayers = el.find(".div-players");
 			var divWinners = this.divWinners = el.find(".div-winners");
-			var btnNext = this.btnNext = el.find(".button-start");
+			var btnNext = this.btnNext = el.find(".button-next");
 //			var btnBack = this.btnBack = el.find(".button-back");
 			
 //			btnBack.off();
@@ -541,7 +538,7 @@ var App = window.App || {};
 		onBack: function(e){
 			if (e) e.preventDefault();
 			
-			self.hide();
+			App.RankingPage.hide();
 			if (this.returnToPage){
 				this.returnToPage.show();
 			} else {
