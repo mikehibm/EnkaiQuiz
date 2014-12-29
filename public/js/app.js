@@ -538,9 +538,10 @@ var App = window.App || {};
 		onBack: function(e){
 			if (e) e.preventDefault();
 			
-			App.RankingPage.hide();
-			if (this.returnToPage){
-				this.returnToPage.show();
+			var self = App.RankingPage;
+			self.hide();
+			if (self.returnToPage){
+				self.returnToPage.show();
 			} else {
 				App.QuizPage.show();
 			}
