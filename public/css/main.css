@@ -6,6 +6,9 @@ body {
 	margin:0;
 	padding: 0;
 	background-color: #ffd;
+	background-image: url('../img/bg.png');
+	background-repeat: repeat;
+	background-attachment: fixed;
 	
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
 }

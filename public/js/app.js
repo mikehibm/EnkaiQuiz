@@ -219,6 +219,8 @@ var App = window.App || {};
 			this.txtPass.removeAttr("readonly");
 			this.btnNext.removeAttr("disabled");
 
+			this.txtPass.val("");
+
 			this.el.fadeIn(PAGE_FADE_IN);
 		},	
 		
