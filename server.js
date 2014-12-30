@@ -179,7 +179,7 @@ io.on('connection', function(socket){
         game.next(data.quiz);
 
         //接続している全員に通知。(本来は該当の大会の参加者のみにおくるべき)
-        io.emit('quiz_next_ok', { 
+        io.emit('quiz_next_result', { 
             gameName: data.gameName, 
             passCode: data.passCode,
             stageName: data.stageName,

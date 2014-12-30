@@ -635,11 +635,15 @@ $(function(){
 	});
 	
 	//クイズ画面の「次へ」の結果を受信
-	App.socket.on('quiz_next_ok', function(data){
-		console.log('Received "quiz_next_ok".', data);
+	App.socket.on('quiz_next_result', function(data){
+		console.log('Received "quiz_next_result".', data);
 		
 		if (App.data.passCode !== data.passCode){
 			//自分が参加しているゲームと違う場合は無視。
+			return;
+		}
+		if (data.error){
+			alert(data.error);
 			return;
 		}
 		
